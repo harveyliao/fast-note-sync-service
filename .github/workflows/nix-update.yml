@@ -1,0 +1,57 @@
+name: Nix Update
+
+on:
+  schedule:
+    - cron: "17 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    name: Update Nix package
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v31
+
+      - name: Skip if a Nix bump PR is already open
+        id: existing_pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          count=$(gh pr list \
+            --state open \
+            --json title \
+            --jq '[.[].title | select(test("^chore\\(nix\\): bump to v?[0-9]"))] | length')
+          echo "count=${count}" >> "$GITHUB_OUTPUT"
+
+      - name: Update flake hashes
+        id: update
+        if: steps.existing_pr.outputs.count == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/update-nix-version.sh
+
+      - name: Create pull request
+        if: steps.existing_pr.outputs.count == '0' && steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION_TAG: ${{ steps.update.outputs.version_tag }}
+        run: |
+          branch="chore/nix-bump-${VERSION_TAG}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add nix/flake.nix
+          git commit -m "chore(nix): bump to ${VERSION_TAG}"
+          git push --force-with-lease --set-upstream origin "$branch"
+          gh pr create \
+            --title "chore(nix): bump to ${VERSION_TAG}" \
+            --body "Updates nix/flake.nix to ${VERSION_TAG} and refreshes the source and vendor hashes." \
+            --base "${{ github.event.repository.default_branch }}" \
+            --head "$branch"
