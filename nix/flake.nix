@@ -32,6 +32,7 @@
 
             env.CGO_ENABLED = "0";
             doCheck = false;
+            subPackages = [ "." ];
 
             # frontend/ docs/ config/ are in the source tree,
             # go:embed picks them up during build automatically.

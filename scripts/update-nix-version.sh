@@ -173,11 +173,11 @@ capture_expected_hash() {
 }
 
 run_nix_build() {
-  cd "$NIX_DIR" && nix build ".#${PACKAGE_ATTR}" --print-out-paths
+  (cd "$NIX_DIR" && nix build ".#${PACKAGE_ATTR}" --print-out-paths)
 }
 
 run_nix_check() {
-  cd "$NIX_DIR" && nix flake check
+  (cd "$NIX_DIR" && nix flake check)
 }
 
 CURRENT_VERSION=$(current_version)
