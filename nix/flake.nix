@@ -16,19 +16,19 @@
         in {
           fast-note-sync-service = pkgs.buildGoModule rec {
             pname = "fast-note-sync-service";
-            version = "2.13.6";
+            version = "2.13.7";
 
             src = pkgs.fetchFromGitHub {
               owner = "haierkeys";
               repo = "fast-note-sync-service";
               rev = version;
               # 1st build: nix prints correct hash -> replace this placeholder
-              hash = "sha256-sDjx0VkUpm6oWHjdsP7hmx/r1RhjeNeh/HMttN0II0A=";
+              hash = "sha256-cvv/JZCGs9he4MiDqifH8E8NztYmODnPmIzhnOepITQ=";
             };
 
             # No vendor/ dir -> buildGoModule fetches deps.
             # 1st build: nix prints correct hash -> replace this placeholder
-            vendorHash = "sha256-RgwwMJE2mm6ZtyBIInL5FWArEgm8gxj9wxJe9k3q1U4=";
+            vendorHash = "sha256-bprz6PC0+xRIXFseIT1oow8T7jsJWapvDQEgFyoK7BA=";
 
             env.CGO_ENABLED = "0";
             doCheck = false;
