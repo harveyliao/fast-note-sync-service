@@ -49,6 +49,7 @@ jobs:
           git switch -c "$branch"
           git add nix/flake.nix
           git commit -m "chore(nix): bump to ${VERSION_TAG}"
+          git fetch origin "$branch" || true
           git push --force-with-lease --set-upstream origin "$branch"
           gh pr create \
             --title "chore(nix): bump to ${VERSION_TAG}" \
