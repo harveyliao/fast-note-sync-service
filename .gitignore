@@ -76,6 +76,8 @@ Icon
 
 # -- Project -----------------------------------------
 /build
+result
+result-*
 /storage/logs
 /storage/uploads
 /storage/

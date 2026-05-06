@@ -1,0 +1,30 @@
+name: Nix
+
+on:
+  pull_request:
+    paths:
+      - "nix/**"
+      - ".github/workflows/nix.yml"
+  push:
+    branches:
+      - master
+      - add-nixos-flake
+    paths:
+      - "nix/**"
+      - ".github/workflows/nix.yml"
+
+jobs:
+  nix:
+    name: Build Nix package
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/determinate-nix-action@v3
+
+      - name: Check flake outputs
+        run: nix flake check ./nix --no-build
+
+      - name: Build package
+        run: nix build ./nix#fast-note-sync-service
